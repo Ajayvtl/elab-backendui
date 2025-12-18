@@ -75,6 +75,7 @@ export default function LoginPage() {
                                 className="w-full pl-10 pr-12 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900 outline-none transition-all"
                                 placeholder="••••••••"
                                 required
+                                autoComplete="current-password"
                             />
                             <button
                                 type="button"
