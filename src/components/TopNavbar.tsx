@@ -2,16 +2,20 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
-import { Bell, Menu, Moon, Search, Sun, Type, User, Monitor, LogOut, Settings } from "lucide-react";
+import { useSettings } from "@/context/SettingsContext";
+import { Bell, Menu, Moon, Search, Sun, Type, User, Monitor, LogOut, Settings, Globe } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
 export default function TopNavbar() {
     const { user, logout } = useAuth();
     const { isDarkMode, toggleTheme, increaseFontSize, decreaseFontSize, toggleSidebar, sidebarCollapsed } = useTheme();
+    const { settings, setResult } = useSettings();
     const [ipAddress, setIpAddress] = useState<string>('Loading...');
     const [showProfileMenu, setShowProfileMenu] = useState(false);
+    const [showLangMenu, setShowLangMenu] = useState(false);
     const profileRef = useRef<HTMLDivElement>(null);
+    const langRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         // Mock IP fetch
@@ -20,10 +24,13 @@ export default function TopNavbar() {
             .then(data => setIpAddress(data.ip))
             .catch(() => setIpAddress('127.0.0.1'));
 
-        // Close dropdown on click outside
+        // Close dropdowns on click outside
         const handleClickOutside = (event: MouseEvent) => {
             if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
                 setShowProfileMenu(false);
+            }
+            if (langRef.current && !langRef.current.contains(event.target as Node)) {
+                setShowLangMenu(false);
             }
         };
         document.addEventListener("mousedown", handleClickOutside);
@@ -61,6 +68,51 @@ export default function TopNavbar() {
                 <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-1 border border-slate-200 dark:border-slate-700">
                     <button onClick={decreaseFontSize} className="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-md text-slate-600 dark:text-slate-400 transition-colors"><Type size={14} /></button>
                     <button onClick={increaseFontSize} className="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-md text-slate-600 dark:text-slate-400 transition-colors"><Type size={18} /></button>
+                </div>
+
+                {/* Language / Currency Switcher */}
+                <div className="relative" ref={langRef}>
+                    <button
+                        onClick={() => setShowLangMenu(!showLangMenu)}
+                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-400 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+                        title="Language & Currency"
+                    >
+                        <Globe size={20} />
+                    </button>
+
+                    {showLangMenu && (
+                        <div className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700 p-4 animate-in fade-in slide-in-from-top-2 z-50">
+                            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Language</h3>
+                            <div className="grid grid-cols-2 gap-2 mb-4">
+                                {['en', 'hi', 'gu', 'mr', 'bn', 'ar'].map(lang => (
+                                    <button
+                                        key={lang}
+                                        onClick={() => { setResult('language', lang); setShowLangMenu(false); }}
+                                        className={`px-2 py-1.5 text-sm rounded-md transition-colors ${settings.language === lang ? 'bg-emerald-100 text-emerald-700' : 'hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'}`}
+                                    >
+                                        {lang === 'en' ? 'English' :
+                                            lang === 'hi' ? 'हिंदी' :
+                                                lang === 'gu' ? 'ગુજરાતી' :
+                                                    lang === 'mr' ? 'मराठी' :
+                                                        lang === 'bn' ? 'বাংলা' : 'العربية'}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Currency</h3>
+                            <div className="grid grid-cols-2 gap-2">
+                                {['INR', 'USD', 'EUR', 'AED'].map(curr => (
+                                    <button
+                                        key={curr}
+                                        onClick={() => { setResult('currency', curr); setShowLangMenu(false); }}
+                                        className={`px-2 py-1.5 text-sm rounded-md transition-colors ${settings.currency === curr ? 'bg-emerald-100 text-emerald-700' : 'hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'}`}
+                                    >
+                                        {curr}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Theme Toggle */}

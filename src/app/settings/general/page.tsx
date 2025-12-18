@@ -5,14 +5,19 @@ import api from "@/lib/api";
 import { Save, Loader2, Phone, Mail, MapPin, Globe, Upload, Image as ImageIcon } from "lucide-react";
 import toast from "react-hot-toast";
 
+import { useSettings } from "@/context/SettingsContext";
+
 export default function GeneralSettings() {
+    const { refreshSettings } = useSettings();
     const [settings, setSettings] = useState({
         contact_email: '',
         contact_phone: '',
         contact_address: '',
-        site_name: 'GreenCross Pathology',
-        brand_name: 'GreenCross',
-        logo: ''
+        site_name: 'Pathology Management',
+        brand_name: 'Lab Admin',
+        logo: '',
+        currency: 'INR',
+        language: 'en'
     });
     const [logoFile, setLogoFile] = useState<File | null>(null);
     const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -29,7 +34,12 @@ export default function GeneralSettings() {
             const response = await api.get('/settings');
             const data = response.data.data;
             if (data) {
-                setSettings(prev => ({ ...prev, ...data }));
+                setSettings(prev => ({
+                    ...prev,
+                    ...data,
+                    currency: data.currency || 'INR',
+                    language: data.language || 'en'
+                }));
                 if (data.logo) {
                     // Prepend API URL if it's a relative path and not already absolute/data URI
                     const logoUrl = data.logo.startsWith('http') ? data.logo : `${process.env.NEXT_PUBLIC_API_URL}${data.logo}`;
@@ -67,8 +77,9 @@ export default function GeneralSettings() {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             toast.success("Settings updated successfully");
-            // Refresh to confirm saved state
+            // Refresh to confirm saved state and update global context
             fetchSettings();
+            refreshSettings();
         } catch (error) {
             toast.error("Failed to save settings");
         } finally {
@@ -135,6 +146,40 @@ export default function GeneralSettings() {
                                 </label>
                                 <p className="text-xs text-slate-500 mt-2">Recommended: 200x200px PNG/SVG</p>
                             </div>
+                        </div>
+                    </div>
+
+                    <h2 className="text-lg font-semibold text-slate-800 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-700 pb-2 pt-4">
+                        <Globe size={18} /> Localization
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Currency</label>
+                            <select
+                                value={settings.currency}
+                                onChange={e => setSettings({ ...settings, currency: e.target.value })}
+                                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-900"
+                            >
+                                <option value="INR">Indian Rupee (₹)</option>
+                                <option value="USD">US Dollar ($)</option>
+                                <option value="EUR">Euro (€)</option>
+                                <option value="AED">UAE Dirham (AED)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Language</label>
+                            <select
+                                value={settings.language}
+                                onChange={e => setSettings({ ...settings, language: e.target.value })}
+                                className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-900"
+                            >
+                                <option value="en">English (English)</option>
+                                <option value="hi">Hindi (हिंदी)</option>
+                                <option value="gu">Gujarati (ગુજરાતી)</option>
+                                <option value="mr">Marathi (मराठी)</option>
+                                <option value="bn">Bengali (বাংলা)</option>
+                                <option value="ar">Arabic (العربية)</option>
+                            </select>
                         </div>
                     </div>
 

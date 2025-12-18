@@ -6,11 +6,13 @@ import { Search, Loader2, FileText, Download, DollarSign, CreditCard } from "luc
 import toast from "react-hot-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/Table";
 import { Badge } from "@/components/ui/Badge";
+import { useSettings } from "@/context/SettingsContext";
 
 export default function FinancePage() {
     const [invoices, setInvoices] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('invoices'); // 'invoices' or 'payments'
+    const { formatCurrency, t } = useSettings();
 
     useEffect(() => {
         fetchFinanceData();
@@ -54,20 +56,20 @@ export default function FinancePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <StatCard
                     icon={<FileText size={24} />}
-                    label="Total Invoiced"
-                    value="$12,450"
+                    label={t('total_invoiced')}
+                    value={formatCurrency(12450)}
                     color="bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300"
                 />
                 <StatCard
                     icon={<DollarSign size={24} />}
-                    label="Received"
-                    value="$10,200"
+                    label={t('received')}
+                    value={formatCurrency(10200)}
                     color="bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300"
                 />
                 <StatCard
                     icon={<CreditCard size={24} />}
-                    label="Pending"
-                    value="$2,250"
+                    label={t('pending')}
+                    value={formatCurrency(2250)}
                     color="bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-300"
                 />
             </div>
@@ -91,17 +93,17 @@ export default function FinancePage() {
                         <TableHeader>
                             <TableHead>ID</TableHead>
                             <TableHead>Order #</TableHead>
-                            <TableHead>Amount</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Actions</TableHead>
+                            <TableHead>{t('amount')}</TableHead>
+                            <TableHead>{t('status')}</TableHead>
+                            <TableHead>{t('date')}</TableHead>
+                            <TableHead>{t('actions')}</TableHead>
                         </TableHeader>
                         <TableBody>
                             {/* Placeholder Data */}
                             <TableRow>
                                 <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400">INV-2024-001</TableCell>
                                 <TableCell className="text-slate-700 dark:text-slate-300">ORD-2024-1001</TableCell>
-                                <TableCell className="font-medium text-slate-800 dark:text-white">$150.00</TableCell>
+                                <TableCell className="font-medium text-slate-800 dark:text-white">{formatCurrency(150.00)}</TableCell>
                                 <TableCell>
                                     <Badge variant="success">PAID</Badge>
                                 </TableCell>
@@ -115,7 +117,7 @@ export default function FinancePage() {
                             <TableRow>
                                 <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400">INV-2024-002</TableCell>
                                 <TableCell className="text-slate-700 dark:text-slate-300">ORD-2024-1005</TableCell>
-                                <TableCell className="font-medium text-slate-800 dark:text-white">$320.00</TableCell>
+                                <TableCell className="font-medium text-slate-800 dark:text-white">{formatCurrency(320.00)}</TableCell>
                                 <TableCell>
                                     <Badge variant="warning">PENDING</Badge>
                                 </TableCell>

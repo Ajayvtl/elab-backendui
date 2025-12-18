@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ShoppingCart, Users, Settings, LogOut, Shield } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, Users, Settings, LogOut, Shield, MapPin, Activity, ImageIcon, FlaskConical, FileText, Tag, Smartphone } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useSettings } from "@/context/SettingsContext";
@@ -14,7 +14,7 @@ export default function Sidebar() {
     const pathname = usePathname();
     const { logout, user } = useAuth();
     const { sidebarCollapsed } = useTheme();
-    const { settings } = useSettings();
+    const { settings, t } = useSettings();
     const [menuItems, setMenuItems] = useState<any[]>([]);
 
     useEffect(() => {
@@ -109,6 +109,13 @@ export default function Sidebar() {
         { name: "Departments", href: "/settings/departments", icon: "Users" },
     ];
 
+    const translateName = (name: string) => {
+        if (!name) return "";
+        const key = name.toLowerCase().replace(/ /g, '_').replace(/\(/g, '').replace(/\)/g, '');
+        // e.g. "Main Menu" -> "main_menu"
+        return t(key) !== key ? t(key) : name;
+    };
+
     const renderMenuItem = (item: any, level: number = 0) => {
         // Check if any child is active (recursive)
         const isChildActiveRecursive = (currentItem: any): boolean => {
@@ -127,9 +134,13 @@ export default function Sidebar() {
         const paddingLeftClass = level === 0 ? 'px-4' : level === 1 ? 'pl-12 pr-4' : 'pl-20 pr-4';
 
         // Resolve Icon
-        // Item icon might be a string name or element. The API sends strings.
         const IconComponent = typeof item.icon === 'string' ? IconMap[item.icon] : null;
-        const iconElement = IconComponent ? <IconComponent size={level === 0 ? 22 : 18} /> : (item.icon || <Shield size={18} />);
+        let DefaultIcon = Shield;
+        if (item.name === 'Finance') DefaultIcon = FileText;
+        if (item.name === 'Logistics') DefaultIcon = MapPin;
+        if (item.name === 'Admin') DefaultIcon = Shield;
+
+        const iconElement = IconComponent ? <IconComponent size={level === 0 ? 22 : 18} /> : (item.icon || <DefaultIcon size={18} />);
 
         if (item.children) {
             return (
@@ -143,7 +154,7 @@ export default function Sidebar() {
                         <span className={`relative z-10 ${isChildActive ? 'text-emerald-400' : ''}`}>
                             {iconElement}
                         </span>
-                        {!sidebarCollapsed && <span className="relative z-10 font-medium tracking-wide whitespace-nowrap flex-1">{item.name}</span>}
+                        {!sidebarCollapsed && <span className="relative z-10 font-medium tracking-wide whitespace-nowrap flex-1">{translateName(item.name)}</span>}
                     </div>
 
                     {!sidebarCollapsed && (
@@ -159,7 +170,7 @@ export default function Sidebar() {
             <Link
                 key={item.href}
                 href={item.href}
-                title={sidebarCollapsed ? item.name : ''}
+                title={sidebarCollapsed ? translateName(item.name) : ''}
                 className={`flex items-center gap-4 ${paddingLeftClass} py-3.5 rounded-xl transition-all duration-200 group relative overflow-hidden ${isActive
                     ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-900/20"
                     : "text-slate-400 hover:bg-slate-800/50 hover:text-white"
@@ -168,7 +179,7 @@ export default function Sidebar() {
                 <span className={`relative z-10 transition-transform duration-200 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}>
                     {iconElement}
                 </span>
-                {!sidebarCollapsed && <span className="relative z-10 font-medium tracking-wide whitespace-nowrap">{item.name}</span>}
+                {!sidebarCollapsed && <span className="relative z-10 font-medium tracking-wide whitespace-nowrap">{translateName(item.name)}</span>}
 
                 {/* Active Indicator */}
                 {isActive && (
@@ -183,11 +194,15 @@ export default function Sidebar() {
             {/* Logo Section */}
             <div className={`p-6 flex items-center gap-3 border-b border-slate-800/50 bg-slate-900/50 dark:bg-slate-950/50 backdrop-blur-xl ${sidebarCollapsed ? 'justify-center' : ''}`}>
                 <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0 overflow-hidden">
-                    <img src={settings.logo} alt={settings.brand_name} className="w-full h-full object-contain p-1" />
+                    {settings.logo ? (
+                        <img src={settings.logo} alt={settings.brand_name} className="w-full h-full object-contain p-1" />
+                    ) : (
+                        <Shield className="text-emerald-600" size={24} />
+                    )}
                 </div>
                 {!sidebarCollapsed && (
                     <div className="overflow-hidden whitespace-nowrap">
-                        <h1 className="text-xl font-bold tracking-wide bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">{settings.brand_name}</h1>
+                        <h1 className="text-xl font-bold tracking-wide bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">{settings.brand_name || 'Admin Panel'}</h1>
                         <p className="text-xs text-slate-500 font-medium tracking-wider uppercase">Admin Console</p>
                     </div>
                 )}
@@ -195,11 +210,11 @@ export default function Sidebar() {
 
             {/* Navigation */}
             <nav className="flex-1 p-3 space-y-2 overflow-y-auto overflow-x-hidden py-6 custom-scrollbar">
-                {!sidebarCollapsed && <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Main Menu</p>}
+                {!sidebarCollapsed && <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">{t('main_menu') !== 'main_menu' ? t('main_menu') : 'MAIN MENU'}</p>}
                 {menuItems?.map((item) => renderMenuItem(item as any))}
 
                 <div className="mt-8 border-t border-slate-800/50 pt-4">
-                    {!sidebarCollapsed && <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Settings</p>}
+                    {!sidebarCollapsed && <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">{t('settings')}</p>}
                     {settingsItems.map((item) => renderMenuItem(item as any))}
                 </div>
             </nav>
@@ -208,13 +223,13 @@ export default function Sidebar() {
             <div className="p-3 border-t border-slate-800/50 bg-slate-900/50 dark:bg-slate-950/50 backdrop-blur-xl">
                 <button
                     onClick={logout}
-                    title="Sign Out"
+                    title={t('logout')}
                     className={`flex items-center gap-3 px-4 py-3 w-full text-left text-red-400 hover:bg-red-500/10 hover:text-red-300 rounded-xl transition-all duration-200 group ${sidebarCollapsed ? 'justify-center px-0' : ''}`}
                 >
                     <div className="p-2 bg-red-500/10 rounded-lg group-hover:bg-red-500/20 transition-colors">
                         <LogOut size={20} />
                     </div>
-                    {!sidebarCollapsed && <span className="font-medium whitespace-nowrap">Sign Out</span>}
+                    {!sidebarCollapsed && <span className="font-medium whitespace-nowrap">{t('logout')}</span>}
                 </button>
             </div>
         </aside>

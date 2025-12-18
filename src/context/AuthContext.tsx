@@ -5,7 +5,7 @@ import api from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
-interface User {
+export interface User {
     id: number;
     name: string;
     email: string;
