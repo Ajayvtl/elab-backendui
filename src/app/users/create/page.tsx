@@ -7,8 +7,13 @@ import { ArrowLeft, Loader2, Save } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
-export default function CreateUserPage() {
+import { useRef, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+
+function CreateUserContent() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const preselectedRole = searchParams.get('role');
     const [roles, setRoles] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -32,13 +37,32 @@ export default function CreateUserPage() {
         }
     };
 
+    // When roles load, if we have a preselected role name (like 'patient'), find its ID
+    useEffect(() => {
+        if (roles.length > 0 && preselectedRole) {
+            const role = roles.find(r => r.name.toLowerCase() === preselectedRole.toLowerCase() || r.name.toLowerCase() === 'user');
+            if (role) {
+                setFormData(prev => ({ ...prev, role_id: role.id }));
+            }
+        }
+    }, [roles, preselectedRole]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         try {
             await api.post('/users', formData);
             toast.success("User created successfully");
-            router.push('/users');
+
+            // Check selected role name to redirect correctly
+            const selectedRole = roles.find(r => r.id == Number(formData.role_id));
+            const roleName = selectedRole?.name?.toLowerCase();
+
+            if (roleName === 'user' || roleName === 'patient') {
+                router.push('/patients');
+            } else {
+                router.push('/users');
+            }
         } catch (error: any) {
             toast.error(error.response?.data?.message || "Failed to create user");
         } finally {
@@ -48,12 +72,12 @@ export default function CreateUserPage() {
 
     return (
         <div className="p-8 max-w-2xl mx-auto">
-            <Link href="/users" className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 flex items-center gap-2 mb-6 transition-colors">
-                <ArrowLeft size={18} /> Back to Users
+            <Link href={preselectedRole === 'patient' ? "/patients" : "/users"} className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 flex items-center gap-2 mb-6 transition-colors">
+                <ArrowLeft size={18} /> {preselectedRole === 'patient' ? "Back to Patients" : "Back to Staff"}
             </Link>
 
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 p-8">
-                <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-6">Create New User</h1>
+                <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-6">Create New {preselectedRole === 'patient' ? 'Patient' : 'User'}</h1>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
@@ -127,11 +151,19 @@ export default function CreateUserPage() {
                             className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-emerald-200 dark:shadow-none"
                         >
                             {loading ? <Loader2 className="animate-spin" /> : <Save size={18} />}
-                            Create User
+                            Create {preselectedRole === 'patient' ? 'Patient' : 'User'}
                         </button>
                     </div>
                 </form>
             </div>
         </div>
+    );
+}
+
+export default function CreateUserPage() {
+    return (
+        <Suspense fallback={<div className="p-8 flex justify-center"><Loader2 className="animate-spin text-emerald-600" /></div>}>
+            <CreateUserContent />
+        </Suspense>
     );
 }

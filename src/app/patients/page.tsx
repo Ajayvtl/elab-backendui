@@ -40,7 +40,7 @@ export default function PatientsPage() {
                     <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Patient Management</h1>
                     <p className="text-slate-500 dark:text-slate-400">Manage registered patients</p>
                 </div>
-                <Link href="/users/create" className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors shadow-lg shadow-emerald-500/20">
+                <Link href="/users/create?role=patient" className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors shadow-lg shadow-emerald-500/20">
                     <Plus size={18} />
                     Add Patient
                 </Link>
