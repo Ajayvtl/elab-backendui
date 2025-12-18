@@ -21,12 +21,24 @@ export default function Sidebar() {
         const fetchMenu = async () => {
             try {
                 const response = await api.get('/menus/my-menu');
-                if (response.data && response.data.data) {
-                    setMenuItems(response.data.data);
-                } else if (response.data && Array.isArray(response.data)) {
+                let items = response.data?.data;
+
+                // Handle double-serialized JSON (string inside JSON)
+                if (typeof items === 'string') {
+                    try {
+                        items = JSON.parse(items);
+                    } catch (e) {
+                        console.error("Failed to parse menu items string", e);
+                        items = [];
+                    }
+                }
+
+                if (Array.isArray(items)) {
+                    setMenuItems(items);
+                } else if (Array.isArray(response.data)) {
+                    // Fallback for some old API formats
                     setMenuItems(response.data);
                 } else {
-                    // Fallback if data is empty or invalid
                     console.warn("Received invalid menu data, using fallback", response.data);
                     setFallbackMenu();
                 }
@@ -183,7 +195,7 @@ export default function Sidebar() {
             {/* Navigation */}
             <nav className="flex-1 p-3 space-y-2 overflow-y-auto overflow-x-hidden py-6 custom-scrollbar">
                 {!sidebarCollapsed && <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Main Menu</p>}
-                {menuItems.map((item) => renderMenuItem(item as any))}
+                {menuItems?.map((item) => renderMenuItem(item as any))}
 
                 <div className="mt-8 border-t border-slate-800/50 pt-4">
                     {!sidebarCollapsed && <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Settings</p>}
