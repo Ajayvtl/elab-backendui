@@ -8,6 +8,7 @@ import { LayoutDashboard, Users, FlaskConical, ShoppingCart, Loader2, TrendingUp
 import toast from "react-hot-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/Table";
 import { Badge } from "@/components/ui/Badge";
+import { useSettings } from "@/context/SettingsContext";
 
 interface DashboardStats {
   totalRevenue: number;
@@ -18,6 +19,7 @@ interface DashboardStats {
 
 export default function Home() {
   const { user, isLoading } = useAuth();
+  const { t, formatCurrency, settings } = useSettings();
   const router = useRouter();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loadingStats, setLoadingStats] = useState(true);
@@ -50,13 +52,13 @@ export default function Home() {
       {/* Header */}
       <header className="mb-10 flex flex-col md:flex-row md:justify-between md:items-end gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Dashboard Overview</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">Welcome back, <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{user.name}</span>. Here's what's happening today.</p>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{t('dashboard')}</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">{t('welcome_back')}, <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{user.name}</span>. Here's what's happening today.</p>
         </div>
         <div className="flex items-center gap-4">
           <div className="bg-white dark:bg-slate-800 px-4 py-2 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-2 text-slate-600 dark:text-slate-300 font-medium">
             <Calendar size={18} className="text-slate-400" />
-            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+            {new Date().toLocaleDateString(settings.language === 'en' ? 'en-US' : settings.language, { weekday: 'long', month: 'long', day: 'numeric' })}
           </div>
         </div>
       </header>
@@ -69,15 +71,15 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatCard
               icon={<DollarSign size={24} />}
-              label="Total Revenue"
-              value={`$${stats.totalRevenue.toLocaleString()}`}
+              label={t('total_revenue')}
+              value={formatCurrency(stats.totalRevenue)}
               trend="+12.5%"
               color="from-emerald-500 to-teal-500"
               shadow="shadow-emerald-500/20"
             />
             <StatCard
               icon={<ShoppingCart size={24} />}
-              label="Pending Orders"
+              label={t('pending_orders')}
               value={stats.ordersByStatus['placed'] || 0}
               trend="+5 new"
               color="from-blue-500 to-indigo-500"
@@ -85,7 +87,7 @@ export default function Home() {
             />
             <StatCard
               icon={<FlaskConical size={24} />}
-              label="Completed Tests"
+              label={t('completed_tests')}
               value={stats.ordersByStatus['completed'] || 0}
               trend="+8.2%"
               color="from-violet-500 to-purple-500"
@@ -93,7 +95,7 @@ export default function Home() {
             />
             <StatCard
               icon={<Users size={24} />}
-              label="Active Staff"
+              label={t('active_staff')}
               value={stats.activePhlebotomists}
               trend="Online"
               color="from-orange-500 to-amber-500"
@@ -106,23 +108,23 @@ export default function Home() {
             <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
               <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
                 <TrendingUp size={20} className="text-emerald-500" />
-                Recent Orders
+                {t('recent_orders')}
               </h2>
               <button className="text-sm font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 flex items-center gap-1 transition-colors">
-                View All <ArrowUpRight size={16} />
+                {t('view_all')} <ArrowUpRight size={16} />
               </button>
             </div>
 
             {stats.recentOrders.length === 0 ? (
-              <div className="p-10 text-center text-slate-400 dark:text-slate-500">No recent activity to show.</div>
+              <div className="p-10 text-center text-slate-400 dark:text-slate-500">{t('no_data')}</div>
             ) : (
               <Table>
                 <TableHeader>
-                  <TableHead>Order ID</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Date</TableHead>
+                  <TableHead>{t('order_id')}</TableHead>
+                  <TableHead>{t('customer')}</TableHead>
+                  <TableHead>{t('amount')}</TableHead>
+                  <TableHead>{t('status')}</TableHead>
+                  <TableHead>{t('date')}</TableHead>
                 </TableHeader>
                 <TableBody>
                   {stats.recentOrders.map((order: any) => (
@@ -141,7 +143,7 @@ export default function Home() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <span className="font-semibold text-slate-700 dark:text-slate-300">${order.total_amount}</span>
+                        <span className="font-semibold text-slate-700 dark:text-slate-300">{formatCurrency(order.total_amount)}</span>
                       </TableCell>
                       <TableCell>
                         <Badge variant={

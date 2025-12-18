@@ -8,8 +8,10 @@ import toast from "react-hot-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/Table";
 import { Badge } from "@/components/ui/Badge";
 import OrdersBoard from "@/components/orders-board/OrdersBoard";
+import { useSettings } from "@/context/SettingsContext";
 
 export default function OrdersPage() {
+    const { t, formatCurrency, settings } = useSettings();
     const [orders, setOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('');
@@ -59,7 +61,7 @@ export default function OrdersPage() {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Orders</h1>
+                    <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">{t('orders')}</h1>
                     <p className="text-slate-500 dark:text-slate-400 mt-1">Manage patient orders and track status</p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -122,12 +124,12 @@ export default function OrdersPage() {
             ) : viewMode === 'list' ? (
                 <Table>
                     <TableHeader>
-                        <TableHead>Order #</TableHead>
-                        <TableHead>Customer</TableHead>
-                        <TableHead>Amount</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableHead>{t('order_id')}</TableHead>
+                        <TableHead>{t('customer')}</TableHead>
+                        <TableHead>{t('amount')}</TableHead>
+                        <TableHead>{t('status')}</TableHead>
+                        <TableHead>{t('date')}</TableHead>
+                        <TableHead className="text-right">{t('actions')}</TableHead>
                     </TableHeader>
                     <TableBody>
                         {filteredOrders.map((order) => (
@@ -144,7 +146,7 @@ export default function OrdersPage() {
                                     </div>
                                 </TableCell>
                                 <TableCell>
-                                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">${order.total_amount}</span>
+                                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{formatCurrency(order.total_amount)}</span>
                                 </TableCell>
                                 <TableCell>
                                     <Badge variant={
@@ -160,7 +162,7 @@ export default function OrdersPage() {
                                 <TableCell>
                                     <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-sm">
                                         <Calendar size={14} />
-                                        {new Date(order.created_at).toLocaleDateString()}
+                                        {new Date(order.created_at).toLocaleDateString(settings.language === 'en' ? 'en-US' : settings.language)}
                                     </div>
                                 </TableCell>
                                 <TableCell className="text-right">
@@ -169,7 +171,7 @@ export default function OrdersPage() {
                                         className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium text-sm bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1.5 rounded-lg transition-colors"
                                     >
                                         <Eye size={16} />
-                                        View
+                                        {t('view_all') === 'View All' ? 'View' : t('view_all')}
                                     </Link>
                                 </TableCell>
                             </TableRow>
@@ -179,7 +181,7 @@ export default function OrdersPage() {
                                 <td className="px-6 py-12 text-center text-slate-500 dark:text-slate-400" colSpan={6}>
                                     <div className="flex flex-col items-center gap-2">
                                         <Search size={32} className="text-slate-300 dark:text-slate-600" />
-                                        <p>No orders found matching your criteria.</p>
+                                        <p>{t('no_data')}</p>
                                     </div>
                                 </td>
                             </TableRow>
