@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import api from "@/lib/api";
 import { format, parseISO } from "date-fns";
 import { Loader2, Calendar as CalendarIcon, MapPin, Grid, List } from "lucide-react";
@@ -33,7 +33,7 @@ interface UnassignedOrder {
 
 const HOURS = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]; // 10 AM to 7 PM
 
-export default function PhlebotomistSchedulePage() {
+const ScheduleContent = () => {
     const [phlebotomists, setPhlebotomists] = useState<Phlebotomist[]>([]);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [unassignedOrders, setUnassignedOrders] = useState<UnassignedOrder[]>([]);
@@ -241,7 +241,7 @@ export default function PhlebotomistSchedulePage() {
                                                     key={hour}
                                                     onDragOver={handleDragOver}
                                                     onDrop={(e) => handleDrop(e, phlebo.id, hour)}
-                                                    className={`p-2 border-r border-slate-50 dark:border-slate-800 relative transition-colors ${!task ? 'hover:bg-emerald-50/30' : ''}`}
+                                                    className={`p-2 border-r border-slate-5 dark:border-slate-800 relative transition-colors ${!task ? 'hover:bg-emerald-50/30' : ''}`}
                                                 >
                                                     {task ? (
                                                         <div
@@ -279,5 +279,13 @@ export default function PhlebotomistSchedulePage() {
             )
             }
         </div >
+    );
+};
+
+export default function PhlebotomistSchedulePage() {
+    return (
+        <Suspense fallback={<div className="h-96 flex items-center justify-center"><Loader2 className="animate-spin w-8 h-8 text-emerald-600" /></div>}>
+            <ScheduleContent />
+        </Suspense>
     );
 }
