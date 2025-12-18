@@ -61,7 +61,8 @@ export default function Sidebar() {
                         { name: "Phlebotomists", href: "/logistics/phlebotomists" },
                     ]
                 },
-                { name: "Patients", href: "/users", icon: "Users" },
+                { name: "Patients", href: "/patients", icon: "Users" },
+                { name: "Staff", href: "/users", icon: "Users" },
                 { name: "Support", href: "/support", icon: "Users" },
                 {
                     name: "Admin",
