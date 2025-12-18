@@ -6,12 +6,15 @@ import api from '@/lib/api';
 import toast from 'react-hot-toast';
 import { Lock, Mail, Loader2, Eye, EyeOff } from 'lucide-react';
 
+import { useSettings } from "@/context/SettingsContext";
+
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const { login } = useAuth();
+    const { settings } = useSettings();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -44,8 +47,13 @@ export default function LoginPage() {
         <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 transition-colors">
             <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100 dark:border-slate-700">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-emerald-600 mb-2">GreenCross</h1>
-                    <p className="text-slate-500 dark:text-slate-400">Pathology Management System</p>
+                    {settings.logo && (
+                        <div className="w-16 h-16 mx-auto mb-4 bg-white rounded-xl shadow-lg shadow-emerald-500/10 p-2 flex items-center justify-center">
+                            <img src={settings.logo} alt={settings.brand_name} className="w-full h-full object-contain" />
+                        </div>
+                    )}
+                    <h1 className="text-3xl font-bold text-emerald-600 mb-2">{settings.brand_name || 'GreenCross'}</h1>
+                    <p className="text-slate-500 dark:text-slate-400">{settings.site_name || 'Pathology Management System'}</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
