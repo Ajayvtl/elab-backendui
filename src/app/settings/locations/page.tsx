@@ -145,7 +145,7 @@ export default function LocationsPage() {
     };
 
     const downloadSample = () => {
-        let data = [];
+        let data: any[] = [];
         if (activeTab === 'states') data = [{ name: 'California', code: 'CA', status: 'active' }];
         else if (activeTab === 'cities') data = [{ name: 'Los Angeles', state_name: 'California', code: 'LA', status: 'active' }];
         else if (activeTab === 'areas') data = [{ name: 'Downtown', city_name: 'Los Angeles', pincode: '90001', status: 'active' }];
