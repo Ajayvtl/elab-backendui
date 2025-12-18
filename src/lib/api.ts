@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+const API_URL = 'https://elab.convrg.click/api/v1'; // Forced production URL for testing
 
 const api = axios.create({
     baseURL: API_URL,
