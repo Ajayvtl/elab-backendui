@@ -155,7 +155,7 @@ export default function MenuBuilderPage() {
                     value={selectedRoleId || ""}
                 >
                     <option value="" disabled>Select Role</option>
-                    {roles.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+                    {roles?.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
                 </select>
 
                 <button
@@ -172,8 +172,8 @@ export default function MenuBuilderPage() {
             ) : selectedRoleId ? (
                 <div className="bg-slate-900 p-6 rounded-xl border border-slate-800">
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                        <SortableContext items={menuItems.map(i => i.name)} strategy={verticalListSortingStrategy}>
-                            {menuItems.map((item) => (
+                        <SortableContext items={menuItems?.map(i => i.name) || []} strategy={verticalListSortingStrategy}>
+                            {menuItems?.map((item) => (
                                 <SortableItem
                                     key={item.name}
                                     id={item.name}
