@@ -20,9 +20,9 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
     const [settings, setSettings] = useState({
-        site_name: 'GreenCross Pathology',
-        brand_name: 'GreenCross',
-        logo: '/logo1.png', // Default fallback
+        site_name: 'Pathology Management',
+        brand_name: 'Lab Admin',
+        logo: '', // No default logo
         contact_email: '',
         contact_phone: '',
         contact_address: ''

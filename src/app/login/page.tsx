@@ -52,8 +52,8 @@ export default function LoginPage() {
                             <img src={settings.logo} alt={settings.brand_name} className="w-full h-full object-contain" />
                         </div>
                     )}
-                    <h1 className="text-3xl font-bold text-emerald-600 mb-2">{settings.brand_name || 'GreenCross'}</h1>
-                    <p className="text-slate-500 dark:text-slate-400">{settings.site_name || 'Pathology Management System'}</p>
+                    <h1 className="text-3xl font-bold text-emerald-600 mb-2">{settings.brand_name || 'Admin Panel'}</h1>
+                    <p className="text-slate-500 dark:text-slate-400">{settings.site_name || 'Management System'}</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -66,7 +66,7 @@ export default function LoginPage() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900 outline-none transition-all"
-                                placeholder="admin@greencross.com"
+                                placeholder="admin@example.com"
                                 required
                             />
                         </div>
