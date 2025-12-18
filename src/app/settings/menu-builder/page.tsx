@@ -86,8 +86,18 @@ export default function MenuBuilderPage() {
             setLoading(true);
             api.get(`/menus/${selectedRoleId}`)
                 .then(res => {
-                    if (res.data && Array.isArray(res.data.data)) {
-                        setMenuItems(res.data.data);
+                    let items = res.data.data;
+                    if (typeof items === 'string') {
+                        try {
+                            items = JSON.parse(items);
+                        } catch (e) {
+                            console.error("Failed to parse menu items string", e);
+                            items = [];
+                        }
+                    }
+
+                    if (Array.isArray(items)) {
+                        setMenuItems(items);
                     } else {
                         console.warn("API returned non-array for menu items:", res.data);
                         setMenuItems([]);
