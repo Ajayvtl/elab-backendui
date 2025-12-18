@@ -86,12 +86,13 @@ export default function MenuBuilderPage() {
             setLoading(true);
             api.get(`/menus/${selectedRoleId}`)
                 .then(res => {
-                    if (res.data && res.data.data) {
+                    if (res.data && Array.isArray(res.data.data)) {
                         setMenuItems(res.data.data);
                     } else {
+                        console.warn("API returned non-array for menu items:", res.data);
                         setMenuItems([]);
                     }
-                }) // Ensure your API returns an array
+                })
                 .catch(err => {
                     console.error(err);
                     toast.error("Failed to load menu");
@@ -172,7 +173,7 @@ export default function MenuBuilderPage() {
             ) : selectedRoleId ? (
                 <div className="bg-slate-900 p-6 rounded-xl border border-slate-800">
                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                        <SortableContext items={menuItems?.map(i => i.name) || []} strategy={verticalListSortingStrategy}>
+                        <SortableContext items={Array.isArray(menuItems) ? menuItems.map(i => i.name) : []} strategy={verticalListSortingStrategy}>
                             {menuItems?.map((item) => (
                                 <SortableItem
                                     key={item.name}
